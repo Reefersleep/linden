@@ -39,6 +39,11 @@
       0 arg1
       1 arg2)))
 
+(defn one-of
+  [& args]
+  (let [random (rand-int (count args))]
+    (get args random)))
+
 (defn X
   "Nothing"
   [state] state) ;;X
