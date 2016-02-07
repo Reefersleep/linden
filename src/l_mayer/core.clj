@@ -45,6 +45,10 @@
         args-vec (vec args)]
     (get args-vec random)))
 
+(defn one-of ;;simpler implementation
+  [& args]
+  (rand-nth args))
+
 (defn X
   "Nothing"
   [state] state) ;;X
