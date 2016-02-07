@@ -41,8 +41,9 @@
 
 (defn one-of
   [& args]
-  (let [random (rand-int (count args))]
-    (get args random)))
+  (let [random (rand-int (count args))
+        args-vec (vec args)]
+    (get args-vec random)))
 
 (defn X
   "Nothing"
@@ -92,3 +93,80 @@
 (defn execute2 [l-product initial] ((apply comp (reverse l-product)) initial))
 
 ;; (execute (l-system [a] rules 2))
+
+(defn conj-or-into
+  [coll arg]
+  (if (vector? arg)
+    (into coll arg)
+    (conj coll arg)))
+
+(defn replace
+  [initiator rules]
+  (loop [initiator initiator
+         rules rules
+         result []]
+    (if-let [current-key (first initiator)]
+      (if-let [current-val (get rules current-key)]
+        (if (clojure.test/function? current-val)
+          (recur (next initiator)
+                 rules
+                 (conj result (current-val)))
+          (recur (next initiator)
+                 rules
+                 (into result current-val)))
+        (recur (next initiator)
+               rules
+               (conj result current-key)))
+      result)))
+
+(defn replace
+  [initiator rules]
+  (loop [initiator initiator
+         rules rules
+         result []]
+    (if-let [current-key (first initiator)] ;; use (empty? initiator) so that nil can be used as valid value
+      (let [current-val (get rules current-key) ;; gotta change this so that I use "contains? so that nil can be used as key and value"
+            new-result (cond (nil? current-val)                   (conj result current-key)
+                             (clojure.test/function? current-val) (conj result (current-val))
+                             :else                                (into result current-val))]
+        (recur (next initiator)
+               rules
+               new-result))
+      result)))
+
+;; Below here is the most recent implementation
+
+(defn append-replacement
+  [key rules coll]
+  (if-not (contains? rules key)
+    (conj coll key)
+    (let [val (get rules key)]
+      (if (clojure.test/function? val)
+           (conj coll (val))
+           (into coll val)))))
+
+(defn replace'
+  ([initiator rules]
+   (replace' initiator rules []))
+  ([initiator rules result]
+   (if (empty? initiator)
+     result
+     (let [current-key (first initiator)
+           new-result (append-replacement current-key
+                                          rules
+                                          result)]
+       (replace' (rest initiator)
+                 rules
+                 new-result)))))
+
+(defn mayer
+  [initiator rules iterations]
+  (if (zero? iterations)
+    initiator
+    (mayer (replace' initiator rules)
+           rules
+           (dec iterations))))
+
+;;example usage
+;;(mayer [:a] {:a [:a ["yo" "da"]]} 3)
+;;=> [:a ["yo" "da"] ["yo" "da"] ["yo" "da"]]
