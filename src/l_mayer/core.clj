@@ -138,6 +138,17 @@
                new-result))
       result)))
 
+;;General util fn - maybe add this to a general library?
+
+(defn nth-iteration
+  "Returns the result of iteratively
+  calling a one-argument fn n times with
+  initial as the argument to the first call.
+  For example, (nth-iteration inc 5 3) would
+  be (inc (inc (inc 5))) => 8"
+  [fn initial n]
+  (nth (iterate fn initial) n))
+
 ;; Below here is the most recent implementation
 
 (defn append-replacement
@@ -150,26 +161,37 @@
            (into coll val)))))
 
 (defn replace'
-  ([initiator rules]
-   (replace' initiator rules []))
-  ([initiator rules result]
+  ([rules initiator ]
+   (replace' rules initiator []))
+  ([rules initiator result]
    (if (empty? initiator)
      result
      (let [current-key (first initiator)
            new-result (append-replacement current-key
                                           rules
                                           result)]
-       (replace' (rest initiator)
-                 rules
+       (replace' rules
+                 (rest initiator)
                  new-result)))))
 
 (defn mayer
   [initiator rules iterations]
   (if (zero? iterations)
     initiator
-    (mayer (replace' initiator rules)
+    (mayer (replace' rules initiator)
            rules
            (dec iterations))))
+
+(defn generations
+  "Returns a lazy list of l-system generations"
+  [rules initiator]
+  (let [informed-replace' (partial replace' rules)]
+    (iterate informed-replace' initiator)))
+
+(defn nth-generation
+  [rules initiator n]
+  (nth (generations rules initiator) n))
+
 
 ;;example usage
 ;;(mayer [:a] {:a [:a ["yo" "da"]]} 3)
