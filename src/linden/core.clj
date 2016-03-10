@@ -1,52 +1,41 @@
 (ns linden.core)
 
-(defn a [arg] (inc arg))
+;;L-system stuff
 
-(defn b [arg] (inc (inc arg)))
+(defn append-replacement
+  [key rules coll]
+  (if-not (contains? rules key)
+    (conj coll key)
+    (let [val (get rules key)]
+      (if (clojure.test/function? val)
+        (conj coll (val))
+        (into coll val)))))
 
-(def rules {a [a b]
-            b [a]})
+(defn replace'
+  ([rules initiator]
+   (replace' rules initiator []))
+  ([rules initiator result]
+   (if (empty? initiator)
+     result
+     (let [current-key (first initiator)
+           new-result (append-replacement current-key
+                                          rules
+                                          result)]
+       (replace' rules
+                 (rest initiator)
+                 new-result)))))
 
-(defn substitute
+(defn generations
+  "Returns a lazy list of l-system generations"
   [rules initiator]
-  (vec (flatten (map #(if-not (contains? rules %) [%]
-                              (let [value (get rules %)]
-                                (if (clojure.test/function? value) (value)
-                                    value)))
-                     initiator))))
+  (let [informed-replace' (partial replace' rules)]
+    (iterate informed-replace' initiator)))
 
-(defn l-system
-  "Takes an 'initiator' in the form of a vector containing
-  zero, one or more of the elements used in the 'rules' map.
-  Each key in 'rules' must have a vector value containing
-  zero, one or more elements. 'iterations' should be an
-  integer. l-system will return a seq where each of the
-  elements in 'initiator' has been recursively replaced
-  - for the number of times described with 'iterations' -
-  with the element's corresponding value in 'rules'.
-  Context-free."
-  [initiator rules iterations]
-  (if (= 0 iterations) initiator
-      (l-system (substitute rules initiator)
-                rules
-                (dec iterations))))
+(defn nth-generation
+  [rules initiator n]
+  (nth (generations rules initiator) n))
 
-(defn either
-  [arg1 arg2]
-  (let [random (rand-int 2)]
-    (condp = random
-      0 arg1
-      1 arg2)))
-
-(defn one-of
-  [& args]
-  (let [random (rand-int (count args))
-        args-vec (vec args)]
-    (get args-vec random)))
-
-(defn one-of 
-  [& args]
-  (rand-nth args))
+;; Tree drawing stuff
 
 (defn X
   "Nothing"
@@ -82,111 +71,15 @@
 
 (def rules {F [F L]
             L [F]
-            X #(either X1 X2)})
+            X #(rand-nth [X1 X2])})
 
 (def start [X])
 
-(def l-product (l-system start rules 7))
+(def l-product (nth-generation rules start 7))
 
-;; Not L-system, only relates to drawing the tree
+;; Drawing the tree
 (defn execute [l-product initial] (eval (cons '->
                                               (cons initial
                                                     l-product))))
 
 (defn execute2 [l-product initial] ((apply comp (reverse l-product)) initial))
-
-;; (execute (l-system [a] rules 2))
-
-(defn conj-or-into
-  [coll arg]
-  (if (vector? arg)
-    (into coll arg)
-    (conj coll arg)))
-
-(defn replace
-  [initiator rules]
-  (loop [initiator initiator
-         rules rules
-         result []]
-    (if-let [current-key (first initiator)]
-      (if-let [current-val (get rules current-key)]
-        (if (clojure.test/function? current-val)
-          (recur (next initiator)
-                 rules
-                 (conj result (current-val)))
-          (recur (next initiator)
-                 rules
-                 (into result current-val)))
-        (recur (next initiator)
-               rules
-               (conj result current-key)))
-      result)))
-
-(defn replace
-  [initiator rules]
-  (loop [initiator initiator
-         rules rules
-         result []]
-    (if-let [current-key (first initiator)] ;; use (empty? initiator) so that nil can be used as valid value
-      (let [current-val (get rules current-key) ;; gotta change this so that I use "contains? so that nil can be used as key and value"
-            new-result (cond (nil? current-val)                   (conj result current-key)
-                             (clojure.test/function? current-val) (conj result (current-val))
-                             :else                                (into result current-val))]
-        (recur (next initiator)
-               rules
-               new-result))
-      result)))
-
-;;General util fn - maybe add this to a general library?
-
-(defn nth-iteration
-  "Returns the result of iteratively
-  calling a one-argument fn n times with
-  initial as the argument to the first call.
-  For example, (nth-iteration inc 5 3) would
-  be (inc (inc (inc 5))) => 8"
-  [fn initial n]
-  (nth (iterate fn initial) n))
-
-;; Below here is the most recent implementation
-
-(defn append-replacement
-  [key rules coll]
-  (if-not (contains? rules key)
-    (conj coll key)
-    (let [val (get rules key)]
-      (if (clojure.test/function? val)
-        (conj coll (val))
-        (into coll val)))))
-
-(defn replace'
-  ([rules initiator]
-   (replace' rules initiator []))
-  ([rules initiator result]
-   (if (empty? initiator)
-     result
-     (let [current-key (first initiator)
-           new-result (append-replacement current-key
-                                          rules
-                                          result)]
-       (replace' rules
-                 (rest initiator)
-                 new-result)))))
-
-(defn mayer
-  [initiator rules iterations]
-  (if (zero? iterations)
-    initiator
-    (mayer (replace' rules initiator)
-           rules
-           (dec iterations))))
-
-(defn generations
-  "Returns a lazy list of l-system generations"
-  [rules initiator]
-  (let [informed-replace' (partial replace' rules)]
-    (iterate informed-replace' initiator)))
-
-(defn nth-generation
-  [rules initiator n]
-  (nth (generations rules initiator) n))
