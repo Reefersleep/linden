@@ -1,4 +1,4 @@
-# l-mayer
+# Linden
 
 A cljc Lindenmayer system (L-system) library.
 
