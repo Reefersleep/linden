@@ -1,4 +1,4 @@
-(ns l-mayer.core)
+(ns linden.core)
 
 (defn a [arg] (inc arg))
 

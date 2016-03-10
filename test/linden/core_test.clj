@@ -1,6 +1,6 @@
-(ns l-mayer.core-test
+(ns linden.core-test
   (:require [clojure.test :refer :all]
-            [l-mayer.core :refer :all]))
+            [linden.core :refer :all]))
 
 ;;example usage
 ;;(nth-generation {[1 2 3] [[1 2 3] ["and" "a" "b" "c"]]} [[1 2 3]] 1)
