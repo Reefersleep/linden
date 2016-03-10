@@ -4,11 +4,15 @@ A cljc Lindenmayer system (L-system) library.
 
 ## Roadmap
 
-*Ensure that fn calling functionality works as expected
-*Add unit tests to ensure functionality
-*Convert to cljc library
-*Add colorful examples of usage to README
-*Add "motivation" section to README
+* **DONE** Ensure that fn calling functionality works as expected
+
+* **DONE** Add unit tests to ensure functionality
+
+* Convert to cljc library
+
+* Add colorful examples of usage to README
+
+* Add "motivation" section to README
 
 ## Usage
 
