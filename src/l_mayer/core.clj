@@ -7,7 +7,6 @@
 (def rules {a [a b]
             b [a]})
 
-
 (defn substitute
   [rules initiator]
   (vec (flatten (map #(if-not (contains? rules %) [%]
@@ -45,7 +44,7 @@
         args-vec (vec args)]
     (get args-vec random)))
 
-(defn one-of ;;simpler implementation
+(defn one-of 
   [& args]
   (rand-nth args))
 
@@ -157,11 +156,11 @@
     (conj coll key)
     (let [val (get rules key)]
       (if (clojure.test/function? val)
-           (conj coll (val))
-           (into coll val)))))
+        (conj coll (val))
+        (into coll val)))))
 
 (defn replace'
-  ([rules initiator ]
+  ([rules initiator]
    (replace' rules initiator []))
   ([rules initiator result]
    (if (empty? initiator)
@@ -191,8 +190,3 @@
 (defn nth-generation
   [rules initiator n]
   (nth (generations rules initiator) n))
-
-
-;;example usage
-;;(mayer [:a] {:a [:a ["yo" "da"]]} 3)
-;;=> [:a ["yo" "da"] ["yo" "da"] ["yo" "da"]]
