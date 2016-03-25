@@ -1,6 +1,6 @@
 (ns linden.core)
 
-;;L-system stuff
+;; Core
 
 (defn append-replacement
   [key rules coll]
@@ -35,7 +35,7 @@
   [rules initiator n]
   (nth (generations rules initiator) n))
 
-;; Tree drawing stuff
+;; Demo - Tree drawing
 
 (defn X
   "Nothing"
