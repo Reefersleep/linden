@@ -1,5 +1,5 @@
 (defproject linden "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
+  :description "An library for generating L-system structures"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
