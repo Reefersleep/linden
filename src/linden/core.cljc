@@ -1,19 +1,13 @@
-(ns linden.core
-  (:require [cljs.test :as ct :refer [function?]]))
+(ns linden.core)
 
 ;; Core
-
-(defn is-function?
-  [x]
-  #?(:clj (clojure.test/function? x)
-     :cljs (ct/function? x)))
 
 (defn append-replacement
   [key rules coll]
   (if-not (contains? rules key)
     (conj coll key)
     (let [val (get rules key)]
-      (if (is-function? val)
+      (if (fn? val)
         (conj coll (val))
         (into coll val)))))
 
