@@ -1,5 +1,5 @@
 (ns linden.core
-  (:require [cljs.test]))
+  (:require [cljs.test :refer [function?]]))
 
 ;; Core
 
