@@ -8,7 +8,7 @@
     (conj coll key)
     (let [val (get rules key)]
       (if (fn? val)
-        (conj coll (val))
+        (into coll (val))
         (into coll val)))))
 
 (defn replace'

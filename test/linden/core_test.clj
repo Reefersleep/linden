@@ -38,18 +38,20 @@
     (comment "You can use functions as leaves")
     function-1 function-2))
 
-(defn a-or-b [] (rand-nth [:a :b]))
+(defn a-or-b [] (rand-nth [[:a] [:b]]))
 
-(defn one-to-four [] (rand-nth [1 2 3 4]))
+(defn one-to-four [] (rand-nth [[1] [2] [3] [4]]))
 
 (deftest sprouts
   (comment "If you use a function instead of a leaf
             (let's call it a sprout),
-            the return value of the function will become a leaf.
+            the return value of the function should be a vector
+            (like a branch) containing the elements you intend to
+            become leaves.
             These are simple examples for demonstration.")
   (are [sprout result] (= [result] (nth-generation {:rule sprout} [:rule] 1))
-    (fn [] :a) :a
-    (fn [] :b) :b)
+    (fn [] [:a]) :a
+    (fn [] [:b]) :b)
   (comment "Actually, the option to use a sprout was
            was put in to enable side-effectful randomness,
            as this allows for less rigid, more organic
