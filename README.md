@@ -8,11 +8,17 @@ A cljc Lindenmayer system (L-system) library.
 
 * **DONE** Add unit tests to ensure functionality
 
-* Convert to cljc library
+* **DONE** Convert to cljc library
+
+* Add explanation of what an L-system is to README
+
+* Explain how the library works in the README
 
 * Add colorful examples of usage to README
 
 * Add "motivation" section to README
+
+* Add generative testing perhaps?
 
 ## Usage
 
