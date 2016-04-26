@@ -1,6 +1,6 @@
 (ns linden.core-test
   (:require [clojure.test :refer :all]
-            [linden.core :refer :all]))
+            [linden.core :as l]))
 
 ;;Leaf tests
 
@@ -9,7 +9,7 @@
 (defn function-2 [] "What a fantastic function")
 
 (deftest leaves
-  (are [a b] (= [a b] (nth (generations {a [a b]} [a]) 1))
+  (are [a b] (= [a b] (nth (l/generations {a [a b]} [a]) 1))
     (comment "You can use keywords as leaves")
     :a :b
 
@@ -45,17 +45,17 @@
             (like a branch) containing the elements you intend to
             become leaves.
             These are simple examples for demonstration.")
-  (are [sprout result] (= [result] (nth (generations {:rule sprout} [:rule]) 1))
+  (are [sprout result] (= [result] (nth (l/generations {:rule sprout} [:rule]) 1))
     (fn [] [:a]) :a
     (fn [] [:b]) :b)
   (comment "Actually, the option to use a sprout was
            was put in to enable side-effectful randomness,
            as this allows for less rigid, more organic
            tree drawing")
-  (let [result1 (first (nth (generations {:rule a-or-b} [:rule]) 1))]
+  (let [result1 (first (nth (l/generations {:rule a-or-b} [:rule]) 1))]
     (is (or (= result1 :a)
             (= result1 :b))))
-  (let [result2 (first (nth (generations {:rule one-to-four} [:rule]) 1))]
+  (let [result2 (first (nth (l/generations {:rule one-to-four} [:rule]) 1))]
     (is (or (= result2 1)
             (= result2 2)
             (= result2 3)
