@@ -1,8 +1,8 @@
 (ns linden.core)
 
-(defn- append-replacement
+(defn- append
   "Returns coll with the appropriate value appended"
-  [key rules coll]
+  [rules coll key]
   (if-not (contains? rules key)
     (conj coll key)
     (let [val (get rules key)]
@@ -10,19 +10,13 @@
         (into coll (val))
         (into coll val)))))
 
-(defn- substitute
+(defn next-generation
   [rules initiator]
-  (loop [initiator initiator
-         result []]
-    (if (empty? initiator)
-      result
-      (recur (rest initiator)
-             (append-replacement (first initiator)
-                                 rules
-                                 result)))))
+  (let [informed-append (partial append rules)]
+    (reduce informed-append [] initiator)))
 
 (defn generations
   "Returns a lazy list of l-system generations"
   [rules initiator]
-  (let [informed-substitute (partial substitute rules)]
-    (iterate informed-substitute initiator)))
+  (let [informed-next-generation (partial next-generation rules)]
+    (iterate informed-next-generation initiator)))
