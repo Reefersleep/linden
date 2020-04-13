@@ -2,27 +2,7 @@
 
 A cljc Lindenmayer system (L-system) library.
 
-## Roadmap
-
-* **DONE** Ensure that fn calling functionality works as expected
-
-* **DONE** Add unit tests to ensure functionality
-
-* **DONE** Convert to cljc library
-
-* Add explanation of what an L-system is to README
-
-* Explain how the library works in the README
-
-* Add colorful examples of usage to README
-
-* Add "motivation" section to README
-
-* Add generative testing perhaps?
-
-## Usage
-
-FIXME
+There are probably thousands of L-system implementations already, and this one does not claim to be better than any of them. I just made it for fun :) and to see how compact and simple it could be in Clojure. Without any side effects, that is.
 
 ## License
 
